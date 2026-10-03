@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encyclopédie des Mobs Minecraft</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        minecraft: ['"Press Start 2P"', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        body {
+            background-color: #121212;
+            background-image: 
+                linear-gradient(45deg, #181818 25%, transparent 25%), 
+                linear-gradient(-45deg, #181818 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #181818 75%), 
+                linear-gradient(-45deg, transparent 75%, #181818 75%);
+            background-size: 40px 40px;
+            background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+            color: #ffffff;
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        /* Minecraft UI Box Effect (Bevel / Borders) */
+        .mc-box {
+            background-color: #c6c6c6;
+            border-top: 4px solid #ffffff;
+            border-left: 4px solid #ffffff;
+            border-right: 4px solid #555555;
+            border-bottom: 4px solid #555555;
+            box-shadow: inset 4px 4px 0px #8b8b8b, inset -4px -4px 0px #373737;
+            image-rendering: pixelated;
+        }
+
+        .mc-button {
+            background-color: #727272;
+            border-top: 3px solid #ffffff;
+            border-left: 3px solid #ffffff;
+            border-right: 3px solid #373737;
+            border-bottom: 3px solid #373737;
+            box-shadow: inset 2px 2px 0px #aeaeae, inset -2px -2px 0px #555555;
+            color: #ffffff;
+            text-shadow: 2px 2px #000000;
+            transition: all 0.1s ease;
+        }
+
+        .mc-button:hover {
+            background-color: #8b8b8b;
+            border-top: 3px solid #ffffff;
+            border-left: 3px solid #ffffff;
+            border-right: 3px solid #222222;
+            border-bottom: 3px solid #222222;
+        }
+
+        .mc-button:active, .mc-button.active {
+            background-color: #555555;
+            border-top: 3px solid #373737;
+            border-left: 3px solid #373737;
+            border-right: 3px solid #ffffff;
+            border-bottom: 3px solid #ffffff;
+            box-shadow: inset 2px 2px 0px #222222, inset -2px -2px 0px #aeaeae;
+        }
+
+        .mc-input {
+            background-color: #222222;
+            border-top: 3px solid #373737;
+            border-left: 3px solid #373737;
+            border-right: 3px solid #ffffff;
+            border-bottom: 3px solid #ffffff;
+            box-shadow: inset 2px 2px 0px #000000;
+            color: #ffffff;
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        .mc-card {
+            background-color: #c6c6c6;
+            border-top: 3px solid #ffffff;
+            border-left: 3px solid #ffffff;
+            border-right: 3px solid #555555;
+            border-bottom: 3px solid #555555;
+            box-shadow: inset 3px 3px 0px #8b8b8b, inset -3px -3px 0px #373737;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #2b2b2b;
+            border-left: 2px solid #111;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #7a7a7a;
+            border-top: 2px solid #fff;
+            border-left: 2px solid #fff;
+            border-right: 2px solid #373737;
+            border-bottom: 2px solid #373737;
+        }
+
+        .pixelated {
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 flex flex-col items-center">
+
+    <header class="w-full max-w-6xl mb-8 text-center">
+        <div class="mc-box p-6 bg-[#2b2b2b] text-[#ffff55] inline-block w-full shadow-2xl relative">
+            <h1 class="text-xl md:text-3xl font-bold tracking-wider mb-2 text-yellow-300 drop-shadow-[3px_3px_#000]">
+                BLOCKPEDIA v1.16
+            </h1>
+            <p class="text-[10px] md:text-xs text-gray-300">Encyclopédie Officielle des Mobs Minecraft & Indices de Menace (0-7)</p>
+            <div class="absolute top-2 right-2 flex gap-1">
+                <span class="w-3 h-3 bg-red-500 inline-block border border-black"></span>
+                <span class="w-3 h-3 bg-yellow-500 inline-block border border-black"></span>
+                <span class="w-3 h-3 bg-green-500 inline-block border border-black"></span>
+            </div>
+        </div>
+    </header>
+
+    <main class="w-full max-w-6xl flex flex-col gap-6">
+        <div class="mc-card p-4 md:p-6 bg-[#c6c6c6] text-black">
+            <div class="flex flex-col md:flex-row gap-4 justify-between items-center">
+                <!-- Search Bar -->
+                <div class="w-full md:w-1/3">
+                    <label class="block text-[10px] font-bold mb-2 text-neutral-800">RECHERCHER UN MOB :</label>
+                    <input type="text" id="searchInput" placeholder="Ex: Creeper, Zombie..." 
+                           class="mc-input w-full p-3 text-[10px] outline-none">
+                </div>
+
+                <!-- Category Filters -->
+                <div class="w-full md:w-auto flex flex-wrap gap-2 justify-center">
+                    <button class="mc-button px-3 py-2 text-[8px] md:text-[10px] active filter-btn" data-category="ALL">TOUS</button>
+                    <button class="mc-button px-3 py-2 text-[8px] md:text-[10px] filter-btn" data-category="Passif">PASSIF</button>
+                    <button class="mc-button px-3 py-2 text-[8px] md:text-[10px] filter-btn" data-category="Neutre">NEUTRE</button>
+                    <button class="mc-button px-3 py-2 text-[8px] md:text-[10px] filter-btn" data-category="Hostile">HOSTILE</button>
+                    <button class="mc-button px-3 py-2 text-[8px] md:text-[10px] filter-btn" data-category="Boss">BOSS</button>
+                </div>
+
+                <!-- Danger Level Filter -->
+                <div class="w-full md:w-auto">
+                    <label class="block text-[10px] font-bold mb-2 text-neutral-800">FILTRER DANGER :</label>
+                    <select id="dangerFilter" class="mc-input w-full p-2.5 text-[9px] outline-none cursor-pointer">
+                        <option value="ALL">Tous les niveaux (0-7)</option>
+                        <option value="0">0 Étoiles (Inoffensif)</option>
+                        <option value="1">1 Étoile (Très Faible)</option>
+                        <option value="2">2 Étoiles (Faible)</option>
+                        <option value="3">3 Étoiles (Modéré)</option>
+                        <option value="4">4 Étoiles (Dangereux)</option>
+                        <option value="5">5 Étoiles (Très Dangereux)</option>
+                        <option value="6">6 Étoiles (Mortel)</option>
+                        <option value="7">7 Étoiles (Cataclysmique)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamically populated via JavaScript -->
+        </div>
+
+        <!-- Empty state warning -->
+        <div id="noResults" class="hidden text-center p-12 mc-card bg-[#c6c6c6] text-black">
+            <p class="text-xs mb-2">AUCUN MOB TROUVÉ DANS CETTE ZONE DU MONDE !</p>
+            <p class="text-[8px] text-gray-700">Essayez de modifier vos filtres ou votre recherche.</p>
+        </div>
+    </main>
+
+    <footer class="w-full max-w-6xl mt-12 text-center text-[8px] text-gray-400">
+        <p>Encyclopédie Minecraft non officielle • Sprites officiels Minecraft Wiki</p>
+    </footer>
+
+    <script>
+        // Base de données complète des mobs Minecraft avec sprites officiels (Minecraft Wiki transparents)
+        const mobsData = [
+            {
+                nameFr: "Zombie",
+                nameEn: "Zombie",
+                category: "Hostile",
+                danger: 3,
+                hp: "20 ( 10 cœurs)",
+                biome: "Sur surface sombre, Grotte",
+                desc: "Créature nocturne classique qui attaque les joueurs à vue et peut briser des portes en difficulté Difficile. Brûle à la lumière du soleil.",
+                drop: "Chair putréfiée, Carotte, Pomme de terre, Fer",
+                sprite: "https://minecraft.wiki/images/Zombie_JE2_BE2.png"
+            },
+            {
+                nameFr: "Creeper",
+                nameEn: "Creeper",
+                category: "Hostile",
+                danger: 5,
+                hp: "20 ( 10 cœurs)",
+                biome: "Partout en surface sombre",
+                desc: "Créature silencieuse qui s'approche furtivement des joueurs avant d'émettre un sifflement et d'exploser violemment. Terrifié par les chats.",
+                drop: "Poudre à canon, Disque de musique (si tué par un Squelette)",
+                sprite: "https://minecraft.wiki/images/Creeper.png"
+            },
+            {
+                nameFr: "Squelette",
+                nameEn: "Skeleton",
+                category: "Hostile",
+                danger: 4,
+                hp: "20 ( 10 cœurs)",
+                biome: "Surface sombre, Souterrains",
+                desc: "Archer redoutable tirant des flèches à distance avec une précision redoutable. Il prend feu sous la lumière directe du soleil.",
+                drop: "Os, Flèche, Arc (parfois enchanté)",
+                sprite: "https://minecraft.wiki/images/Skeleton_JE3_BE2.png"
+            },
+            {
+                nameFr: "Araignée",
+                nameEn: "Spider",
+                category: "Neutre",
+                danger: 3,
+                hp: "16 ( 8 cœurs)",
+                biome: "Partout (Nuit / Grottes sombres)",
+                desc: "Neutre en plein jour, elle devient agressive dans l'obscurité. Capable d'escalader les murs verticaux avec agilité.",
+                drop: "Fil, Œil d'araignée",
+                sprite: "https://minecraft.wiki/images/Spider_JE3_BE3.png"
+            },
+            {
+                nameFr: "Ender Dragon",
+                nameEn: "Ender Dragon",
+                category: "Boss",
+                danger: 7,
+                hp: "200 ( 100 cœurs)",
+                biome: "L'Ender",
+                desc: "Le boss final suprême du jeu. Il vole dans les cieux de l'Ender, se régénère via des cristaux et charge violemment le joueur.",
+                drop: "Dragon Egg (unique), Immense quantité d'XP",
+                sprite: "https://minecraft.wiki/images/Ender_Dragon.png"
+            },
+            {
+                nameFr: "Wither",
+                nameEn: "Wither",
+                category: "Boss",
+                danger: 7,
+                hp: "300 / 450 (Java/Bedrock)",
+                biome: "Invoqué par le joueur (Sable des âmes + Têtes de Wither)",
+                desc: "Boss destructeur à trois têtes tirant des crânes explosifs qui infligent l'effet Wither (pourriture). Provoque une explosion monumentale à sa création.",
+                drop: "Étoile du Nether",
+                sprite: "https://minecraft.wiki/images/Wither.gif"
+            },
+            {
+                nameFr: "Vache",
+                nameEn: "Cow",
+                category: "Passif",
+                danger: 0,
+                hp: "10 ( 5 cœurs)",
+                biome: "Prairies, Forêts",
+                desc: "Animal paisible indispensable pour le cuir, le bœuf cru et le lait (récoltable avec un seau).",
+                drop: "Cuir, Bœuf cru, Lait",
+                sprite: "https://minecraft.wiki/images/Cow_JE4_BE4.png"
+            },
+            {
+                nameFr: "Cochon",
+                nameEn: "Pig",
+                category: "Passif",
+                danger: 0,
+                hp: "10 ( 5 cœurs)",
+                biome: "Prairies, Forêts",
+                desc: "Fournisseur de porc cru. Peut être monté à l'aide d'une carotte sur un baton après avoir été équipé d'une selle.",
+                drop: "Porc cru (ou cuit si enflammé)",
+                sprite: "https://minecraft.wiki/images/Pig_JE3_BE3.png"
+            },
+            {
+                nameFr: "Mouton",
+                nameEn: "Sheep",
+                category: "Passif",
+                danger: 0,
+                hp: "8 ( 4 cœurs)",
+                biome: "Prairies, Collines",
+                desc: "Fournit de la laine de diverses couleurs et du mouton cru. Peut être tondu sans le tuer pour récupérer de la laine.",
+                drop: "Laine (couleur assortie), Mutton cru",
+                sprite: "https://minecraft.wiki/images/Sheep_JE3_BE3.png"
+            },
+            {
+                nameFr: "Enderman",
+                nameEn: "Enderman",
+                category: "Neutre",
+                danger: 4,
+                hp: "40 ( 20 cœurs)",
+                biome: "L'Ender, Surface (nuit)",
+                desc: "Grand humanoïde mystérieux capable de se téléporter et de déplacer des blocs. Devient fou furieux si on le regarde directement dans les yeux.",
+                drop: "Perle de l'Ender",
+                sprite: "https://minecraft.wiki/images/Enderman.png"
+            },
+            {
+                nameFr: "Cochon Zombie",
+                nameEn: "Zombified Piglin",
+                category: "Neutre",
+                danger: 3,
+                hp: "20 ( 10 cœurs)",
+                biome: "Le Nether (Terres ravagées, Forêts écarlates)",
+                desc: "Créature pacifique en groupe, mais si un membre est attaqué, toute la horde du Nether se rue sur le joueur pour le massacrer.",
+                drop: "Chair putréfiée, Pépite d'or, Or, Épée en or",
+                sprite: "https://minecraft.wiki/images/Zombified_Piglin.png"
+            },
+            {
+                nameFr: "Piglin",
+                nameEn: "Piglin",
+                category: "Neutre",
+                danger: 4,
+                hp: "16 ( 8 cœurs)",
+                biome: "Le Nether (Forêts cramoisies, Bastions)",
+                desc: "Habitant du Nether obsédé par l'or. Il attaque à vue sauf si le joueur porte au moins une pièce d'armure en or. Peut troquer des objets.",
+                drop: "Arbalète, Armure en or, Équipement",
+                sprite: "https://minecraft.wiki/images/Piglin.png"
+            },
+            {
+                nameFr: "Warden",
+                nameEn: "Warden",
+                category: "Hostile",
+                danger: 7,
+                hp: "500 ( 250 cœurs)",
+                biome: "Abîmes ténébreux (Deep Dark / Ancient Cities)",
+                desc: "Monstre aveugle surpuissant des profondeurs. Il repère les vibrations et les sons. Capable d'éliminer un joueur en armure netherite en un ou deux coups.",
+                drop: "Catalyseur de Sculk (1 bloc d'expérience)",
+                sprite: "https://minecraft.wiki/images/Warden.png"
+            },
+            {
+                nameFr: "Ghast",
+                nameEn: "Ghast",
+                category: "Hostile",
+                danger: 5,
+                hp: "10 ( 5 cœurs)",
+                biome: "Le Nether (Vallée des âmes sableuses)",
+                desc: "Immense méduse volante du Nether qui pousse des pleurs lugubres et bombarde le joueur de boules de feu explosives.",
+                drop: "Larme de Ghast, Poudre à canon",
+                sprite: "https://minecraft.wiki/images/Ghast.png"
+            },
+            {
+                nameFr: "Blaze",
+                nameEn: "Blaze",
+                category: "Hostile",
+                danger: 5,
+                hp: "20 ( 10 cœurs)",
+                biome: "Forteresses du Nether",
+                desc: "Créature de feu flottante composée de tiges ardentes. Elle tire des salves de boules de feu dévastatrices à distance.",
+                drop: "Bâton de Blaze",
+                sprite: "https://minecraft.wiki/images/Blaze.png"
+            },
+            {
+                nameFr: "Slime",
+                nameEn: "Slime",
+                category: "Hostile",
+                danger: 2,
+                hp: "Varie (16 / 4 / 1)",
+                biome: "ChCandidats de slime / Profondeurs y-40",
+                desc: "Cube gélatineux bondissant qui se divise en deux ou trois petits slimes lorsqu'on le frappe et le réduit en morceaux.",
+                drop: "Boule de Slime",
+                sprite: "https://minecraft.wiki/images/Slime_(entity).png"
+            },
+            {
+                nameFr: "Sorcier / Sorcière",
+                nameEn: "Witch",
+                category: "Hostile",
+                danger: 4,
+                hp: "26 ( 13 cœurs)",
+                biome: "Cabanes de marais, Nuit",
+                desc: "Utilisatrice de magie noire qui lance des potions de poison, de lenteur et de dégâts instantanés tout en se soignant.",
+                drop: "Poudre lumineuse, Poussière de redstone, Sucre, Verre",
+                sprite: "https://minecraft.wiki/images/Witch.png"
+            },
+            {
+                nameFr: "Villageois",
+                nameEn: "Villager",
+                category: "Passif",
+                danger: 0,
+                hp: "20 ( 10 cœurs)",
+                biome: "Villages",
+                desc: "Habitant pacifique échangeant des ressources contre des émeraude. Fait l'objet de convoitise des zombies lors des sièges.",
+                drop: "Aucun (interdit de tuer sous peine de courroux du Golem)",
+                sprite: "https://minecraft.wiki/images/Plains_Villager.png"
+            },
+            {
+                nameFr: "Golem de Fer",
+                nameEn: "Iron Golem",
+                category: "Neutre",
+                danger: 5,
+                hp: "100 ( 50 cœurs)",
+                biome: "Villages (ou fabriqué par le joueur)",
+                desc: "Protecteur géant en fer des villageois. Projette les monstres hostiles haut dans les airs avec une force herculéenne.",
+                drop: "Lingot de fer, Coquelicot",
+                sprite: "https://minecraft.wiki/images/Iron_Golem.png"
+            },
+            {
+                nameFr: "Pillard",
+                nameEn: "Pillager",
+                category: "Hostile",
+                danger: 4,
+                hp: "24 ( 12 cœurs)",
+                biome: "Patrouilles, Postes avancés (Outposts)",
+                desc: "Membre des illageois armé d'une arbalète rapide. Se déplace souvent en patrouille pour attaquer villages et joueurs.",
+                drop: "Flèches, Arbalète, Bannière de pillard (capitaine)",
+                sprite: "https://minecraft.wiki/images/Pillager.png"
+            },
+            {
+                nameFr: "Ravageur",
+                nameEn: "Ravager",
+                category: "Hostile",
+                danger: 6,
+                hp: "100 ( 50 cœurs)",
+                biome: "Attaques de villages (Raids)",
+                desc: "Bête colossale utilisée par les pillards lors des raids. Elle piétine tout sur son passage et inflige des dégâts immenses.",
+                drop: "Selle",
+                sprite: "https://minecraft.wiki/images/Ravager.png"
+            },
+            {
+                nameFr: "Axolotl",
+                nameEn: "Axolotl",
+                category: "Passif",
+                danger: 0,
+                hp: "14 ( 7 cœurs)",
+                biome: "Grottes luxuriantes (Lush Caves)",
+                desc: "Adorable amphibien aquatique qui aide le joueur en combattant les créatures sous-marines et en octroyant la régénération.",
+                drop: "Aucun",
+                sprite: "https://minecraft.wiki/images/Lucistic_Axolotl.png"
+            },
+            {
+                nameFr: "Gardien",
+                nameEn: "Guardian",
+                category: "Hostile",
+                danger: 5,
+                hp: "30 ( 15 cœurs)",
+                biome: "Monuments océaniques",
+                desc: "Créature marine armée d'un œil laser perçant qui inflige des dégâts continus à distance et inflige l'effet Fatigue minérale.",
+                drop: "Prismarine, Poisson cru",
+                sprite: "https://minecraft.wiki/images/Guardian.png"
+            }
+        ];
+
+        // État de l'application
+        let currentCategory = 'ALL';
+        let currentDanger = 'ALL';
+        let searchQuery = '';
+
+        // Fonction pour générer les étoiles de dangerosité (0 à 7)
+        function renderStars(count) {
+            let starsHTML = '';
+            for (let i = 1; i <= 7; i++) {
+                if (i <= count) {
+                    starsHTML += '<span class="text-yellow-400 drop-shadow-[1px_1px_#000]">★</span>';
+                } else {
+                    starsHTML += '<span class="text-neutral-500">☆</span>';
+                }
+            }
+            return starsHTML;
+        }
+
+        // Fonction de rendu de la grille des mobs
+        function renderMobs() {
+            const grid = document.getElementById('mobGrid');
+            const noResults = document.getElementById('noResults');
+            
+            // Filtrage des données
+            const filtered = mobsData.filter(mob => {
+                const matchCategory = currentCategory === 'ALL' || mob.category === currentCategory;
+                const matchDanger = currentDanger === 'ALL' || mob.danger === parseInt(currentDanger);
+                const query = searchQuery.toLowerCase();
+                const matchSearch = mob.nameFr.toLowerCase().includes(query) || 
+                                    mob.nameEn.toLowerCase().includes(query) || 
+                                    mob.desc.toLowerCase().includes(query) ||
+                                    mob.biome.toLowerCase().includes(query);
+                return matchCategory && matchDanger && matchSearch;
+            });
+
+            grid.innerHTML = '';
+
+            if (filtered.length === 0) {
+                noResults.classList.remove('hidden');
+                return;
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            filtered.forEach(mob => {
+                // Badge couleur selon la catégorie
+                let badgeColor = 'bg-neutral-700 text-white';
+                if (mob.category === 'Passif') badgeColor = 'bg-green-700 text-green-100';
+                if (mob.category === 'Neutre') badgeColor = 'bg-blue-700 text-blue-100';
+                if (mob.category === 'Hostile') badgeColor = 'bg-red-800 text-red-100';
+                if (mob.category === 'Boss') badgeColor = 'bg-purple-800 text-purple-100';
+
+                const card = document.createElement('div');
+                card.className = 'mc-card p-4 bg-[#c6c6c6] text-black flex flex-col justify-between transition-transform hover:-translate-y-1';
+                card.innerHTML = `
+                    <div>
+                        <!-- En-tête de la carte -->
+                        <div class="flex justify-between items-start mb-3 border-b-2 border-neutral-400 pb-2">
+                            <div>
+                                <h3 class="text-xs font-bold text-neutral-900 mb-1">${mob.nameFr}</h3>
+                                <span class="text-[7px] text-neutral-600 italic">(${mob.nameEn})</span>
+                            </div>
+                            <div class="w-12 h-12 flex items-center justify-center bg-[#b5b5b5] border border-neutral-500 shadow-inner overflow-hidden">
+                                <img src="${mob.sprite}" alt="${mob.nameFr}" class="max-w-full max-h-full pixelated object-contain" onerror="this.onerror=null; this.src='https://placehold.co/48x48/727272/ffffff?text=Mob';">
+                            </div>
+                        </div>
+
+                        <!-- Badge Catégorie -->
+                        <div class="mb-3 flex justify-between items-center">
+                            <span class="text-[7px] px-2 py-1 uppercase font-bold border border-black ${badgeColor}">
+                                ${mob.category}
+                            </span>
+                            <div class="text-[8px] bg-[#b5b5b5] px-2 py-1 border border-neutral-500">
+                                PV: <span class="text-red-700 font-bold">${mob.hp}</span>
+                            </div>
+                        </div>
+
+                        <!-- Dangerosité (0-7 étoiles) -->
+                        <div class="mb-3 bg-[#b5b5b5] p-2 border border-neutral-500">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-[7px] font-bold text-neutral-800">MENACE :</span>
+                                <span class="text-[8px] font-bold text-neutral-900">${mob.danger}/7</span>
+                            </div>
+                            <div class="text-xs tracking-tighter">
+                                ${renderStars(mob.danger)}
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <p class="text-[8px] leading-relaxed text-neutral-800 mb-4 bg-neutral-300 p-2 border border-neutral-400">
+                            ${mob.desc}
+                        </p>
+                    </div>
+
+                    <!-- Informations secondaires (Biomes & Loot) -->
+                    <div class="text-[7px] text-neutral-700 border-t-2 border-neutral-400 pt-2 flex flex-col gap-1">
+                        <div><strong class="text-neutral-900">Biome :</strong> ${mob.biome}</div>
+                        <div><strong class="text-neutral-900">Butin :</strong> ${mob.drop}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Gestionnaires d'événements
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMobs();
+
+            // Recherche en temps réel
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                searchQuery = e.target.value;
+                renderMobs();
+            });
+
+            // Filtre de dangerosité
+            document.getElementById('dangerFilter').addEventListener('change', (e) => {
+                currentDanger = e.target.value;
+                renderMobs();
+            });
+
+            // Filtres par catégorie
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentCategory = e.target.getAttribute('data-category');
+                    renderMobs();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
